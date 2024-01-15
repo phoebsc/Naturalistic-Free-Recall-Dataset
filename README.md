@@ -15,9 +15,7 @@ The repository is organized as follows:
 - F_check_text.py : Python script for text checking (output saved in "result_text")
   
 ### folders
-- eventSeg_helpers : Python package with support code for event segmentation
+- sherlock_helpers : Python package with support code for 'Sherlock' analyses
 - result_models : Folder containing model results
 - result_text : Folder containing text results
-- ridge_utils : Python utility scripts for ridge regression analysis
-- sherlock_helpers : Python package with support code for 'Sherlock' analyses
-- story_transcript : Transcripts of stories used in analyses
+- story_transcript : Original transcripts of stories used in analyses
