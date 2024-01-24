@@ -2,17 +2,10 @@ from scipy.spatial.distance import cdist
 import more_itertools as mit
 import os
 import sys
-try:
-    os.chdir('./topic_models')
-except:
-    pass
 sys.path.append(os.getcwd())
-from sherlock_helpers.functions import *
-from sherlock_helpers.constants import *
 from sherlock_helpers.scoring import *
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 def scoring_func(story_id):
     DATA_DIR = 'result_models'
@@ -29,15 +22,6 @@ def scoring_func(story_id):
     """
     scoring all recalls
     """
-    ## for cleaning based on standard deviation
-    # std_cutoff = 1
-    # recall_mean, recall_std = np.mean([r.shape[0] for r in recall_events]), np.std([r.shape[0] for r in recall_events])
-    # cutoff = recall_mean - std_cutoff * recall_std
-    # keep_ids = [i for i,r in enumerate(recall_events) if r.shape[0]>cutoff]
-    # recall_events = [r for i,r in enumerate(recall_events) if i in keep_ids]
-    # event_mappings = [r for i,r in enumerate(event_mappings) if i in keep_ids]
-    # recall_ids = [r for i,r in enumerate(recall_ids) if i in keep_ids]
-
     ##
     n = 0
     plot_n = 1
@@ -111,8 +95,6 @@ def scoring_func(story_id):
     save precision as an array
     """
     np.save(os.path.join(DATA_DIR,subfolder,'precision_array'),  np.array(precisions))
-    # np.save(os.path.join(DATA_DIR,subfolder,'recall_events_clean'), recall_events)
-    # np.save(os.path.join(DATA_DIR,subfolder,'recall_ids_clean'), recall_ids)
 
 story_ids = ['pieman','eyespy','oregon','baseball']
 for story_id in story_ids:

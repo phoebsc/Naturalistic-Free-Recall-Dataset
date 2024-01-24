@@ -1,15 +1,8 @@
-import os
-import sys,pickle
-import numpy as np
+import os, sys
 import tqdm
 from scipy.spatial.distance import cdist
 from scipy.stats import wasserstein_distance, pearsonr
 from tqdm.notebook import tqdm
-
-try:
-    os.chdir('./topic_models')
-except:
-    pass
 sys.path.append(os.getcwd())
 from sherlock_helpers.functions import *
 from eventSeg_helpers import event
