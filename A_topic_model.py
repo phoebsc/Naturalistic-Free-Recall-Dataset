@@ -1,10 +1,15 @@
+"""
+This script will grab a story transcript and train a topic model based on hardcoded hyperparameters. Then, it will
+apply the trained topic model to recall transcripts of that same story.
+"""
+
 import hypertools as hyp
 import os
 import sys
 sys.path.append(os.getcwd())
-from sherlock_helpers.functions import *
-from sherlock_helpers.constants import *
-from sherlock_helpers.scoring import *
+from sherlock_helpers.functions import format_text, parse_windows_reg
+from sherlock_helpers.constants import VECTORIZER_PARAMS
+
 
 DATA_DIR = 'result_models'
 story_ids = ['pieman','eyespy','oregon','baseball']
@@ -24,7 +29,7 @@ def clean_text(text):
     return text
 
 # function to generate
-def topic_model(story_id, n_topics, VIDEO_WSIZE, step_size):
+def topic_model(story_id, n_topics, wsize, step_size):
     SEMANTIC_PARAMS = {
         'model': 'LatentDirichletAllocation',
         'params': {
@@ -38,20 +43,19 @@ def topic_model(story_id, n_topics, VIDEO_WSIZE, step_size):
     with open(story_path, encoding="utf8") as f:
         story = f.read().strip()
     # create overlapping windows
-    # stop_words = set(stopwords.words('english'))
     story_fmt = format_text(story).replace('\n',' ').replace('.','').strip()
     story_fmt = " ".join(story_fmt.split()).split(' ')
 
-    sub_story, bounds_story = parse_windows_reg(story_fmt, VIDEO_WSIZE, step_size)
+    sub_story, bounds_story = parse_windows_reg(story_fmt, wsize, step_size)
     # create the story model (77x100)
     story_model = hyp.tools.format_data(sub_story,
-                                          vectorizer=VECTORIZER_PARAMS,
-                                          semantic=SEMANTIC_PARAMS,
-                                          corpus=sub_story)[0]
+                                        vectorizer=VECTORIZER_PARAMS,
+                                        semantic=SEMANTIC_PARAMS,
+                                        corpus=sub_story)[0]
 
     """
-    then used the topic model already trained on the episode scenes 
-    to compute the most probable topic proportions for each sliding window.
+    then used the topic model already trained on the story
+    to compute the most probable topic proportions for each sliding window in the story recall.
     """
     recall_paths = [os.path.join('./recall_transcript/recall_transcript_%s/' % story_id,x)
                     for x in os.listdir('./recall_transcript/recall_transcript_%s/' % story_id)]
@@ -66,25 +70,24 @@ def topic_model(story_id, n_topics, VIDEO_WSIZE, step_size):
         recall_fmt = recall_fmt.replace('im done','').replace('i am done','')
         recall_fmt = " ".join(recall_fmt.split()).split(' ')
 
-        # use avg number of words in the event as recall window
-        # RECALL_WSIZE = int(np.mean([len(s.split(' ')) for s in story_fmt]))
-        RECALL_WSIZE = VIDEO_WSIZE
-        sub_recall, bounds_recall = parse_windows_reg(recall_fmt, RECALL_WSIZE,step_size)
+        recall_wsize = wsize
+        sub_recall, bounds_recall = parse_windows_reg(recall_fmt, recall_wsize,step_size)
         # create the story model (77x100)
         recall_model = hyp.tools.format_data(sub_recall,
-                                              vectorizer=VECTORIZER_PARAMS,
-                                              semantic=SEMANTIC_PARAMS,
-                                              corpus=sub_story)[0]
+                                             vectorizer=VECTORIZER_PARAMS,
+                                             semantic=SEMANTIC_PARAMS,
+                                             corpus=sub_story)[0]
         recall_models.append(recall_model)
     # save the models
     n_topics = SEMANTIC_PARAMS['params'].get('n_components')
-    np.save(os.path.join(os.getcwd(),DATA_DIR,f'%s_t{n_topics}_v{VIDEO_WSIZE}_r{RECALL_WSIZE}_s{step_size}' % story_id),
+    np.save(os.path.join(os.getcwd(),DATA_DIR,f'%s_t{n_topics}_v{wsize}_r{recall_wsize}_s{step_size}' % story_id),
             [story_model, recall_models,recall_paths])
 
+
 n_topics = 40
-video_size = 55
+story_wsize = 55
 step_size = 21
 for story_id in story_ids:
-    topic_model(story_id, n_topics, video_size, step_size)
+    topic_model(story_id, n_topics, story_wsize, step_size)
 
 
