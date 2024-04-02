@@ -4,6 +4,7 @@ apply the trained topic model to recall transcripts of that same story.
 """
 
 import hypertools as hyp
+import numpy as np
 import os
 import sys
 sys.path.append(os.getcwd())
