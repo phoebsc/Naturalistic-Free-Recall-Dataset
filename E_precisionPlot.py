@@ -1,14 +1,19 @@
+"""
+# TODO: rename this file to indicate that it's plotting P(recall) too?
+Generates plots to examine (1) probability of recall and (2) precision of recall. Also computes a permutation
+baseline by scrambling tevents within each participant.
+"""
 from scipy.spatial.distance import cdist
 import os
 import sys
 sys.path.append(os.getcwd())
-from sherlock_helpers.scoring import *
+from sherlock_helpers.scoring import precise_matches_mat, distinct_matches_mat
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import bootstrap
 from numpy.random import permutation
-DATA_DIR = './result_models'
-IMG_DIR = './result_plots'
+data_dir = './result_models'
+img_dir = './result_plots'
 """
 permutation baseline (each story)
 """
@@ -25,13 +30,13 @@ def generate_baseline(data, iterations=10000):
 story_ids = ['pieman','eyespy','oregon','baseball']
 for id in story_ids:
     subfolder = '%s_t40_v55_r55_s21' % id
-    filename = [x for x in os.listdir(os.path.join(DATA_DIR, subfolder)) if 'precision_array' in x][0]
-    precisions = np.load(os.path.join(DATA_DIR, subfolder, filename), allow_pickle=True)
+    filename = [x for x in os.listdir(os.path.join(data_dir, subfolder)) if 'precision_array' in x][0]
+    precisions = np.load(os.path.join(data_dir, subfolder, filename), allow_pickle=True)
     precisions[precisions>0] = 1  # turn precision matrix into probability of recall
     baseline_upper, baseline_lower = generate_baseline(precisions)
     # save baseline
-    np.save(os.path.join(DATA_DIR,subfolder,'probrecall_baseline_upper'),  np.array(baseline_upper))
-    np.save(os.path.join(DATA_DIR,subfolder,'probrecall_baseline_lower'),  np.array(baseline_lower))
+    np.save(os.path.join(data_dir,subfolder,'probrecall_baseline_upper'),  np.array(baseline_upper))
+    np.save(os.path.join(data_dir,subfolder,'probrecall_baseline_lower'),  np.array(baseline_lower))
 
     # plot
     fig, ax = plt.subplots(figsize=(20, 20))
@@ -43,7 +48,7 @@ for id in story_ids:
     ax.fill_between(np.arange(1, precisions.shape[1]+1), (y - ci), (y + ci),
                     color='b',
                     alpha=.1)
-    fig.savefig(os.path.join(IMG_DIR, subfolder, 'probrecall_baseline.png'))
+    fig.savefig(os.path.join(img_dir, subfolder, 'probrecall_baseline.png'))
 """
 plotting precision plot
 """
@@ -54,23 +59,23 @@ fig, axes = plt.subplots(2, 2, figsize=(12, 7.5))
 FIG_DIR = 'final_plots'
 plot_n=0
 for story_id in story_ids:
-    DATA_DIR = 'result_models'
-    IMG_DIR = 'result_plots'
+    data_dir = 'result_models'
+    img_dir = 'result_plots'
     subfolder = '%s_t40_v55_r55_s21' % story_id
-    video_events = np.load(os.path.join(DATA_DIR,subfolder,'video_events.npy'), allow_pickle=True)
-    recall_events = np.load(os.path.join(DATA_DIR,subfolder,'recall_events.npy'), allow_pickle=True)
-    event_mappings = np.load(os.path.join(DATA_DIR,subfolder,'labels.npy'), allow_pickle=True)
-    _, _, recall_ids = np.load(os.path.join(DATA_DIR,subfolder+'.npy'),
+    story_events = np.load(os.path.join(data_dir,subfolder,'video_events.npy'), allow_pickle=True)  # TODO: refactor instances of 'video*.file_ext'
+    recall_events = np.load(os.path.join(data_dir,subfolder,'recall_events.npy'), allow_pickle=True)
+    event_mappings = np.load(os.path.join(data_dir,subfolder,'labels.npy'), allow_pickle=True)
+    _, _, recall_ids = np.load(os.path.join(data_dir,subfolder+'.npy'),
                                          allow_pickle=True)
-    baseline_upper = np.load(os.path.join(DATA_DIR, subfolder,
-                       [x for x in os.listdir(os.path.join(DATA_DIR, subfolder)) if 'baseline_upper' in x][0]))
+    baseline_upper = np.load(os.path.join(data_dir, subfolder,
+                       [x for x in os.listdir(os.path.join(data_dir, subfolder)) if 'baseline_upper' in x][0]))
     # produce a grand average baseline
     baseline_upper = np.mean(baseline_upper)
-    baseline_lower = np.load(os.path.join(DATA_DIR, subfolder,
-                       [x for x in os.listdir(os.path.join(DATA_DIR, subfolder)) if 'baseline_lower' in x][0]))
+    baseline_lower = np.load(os.path.join(data_dir, subfolder,
+                       [x for x in os.listdir(os.path.join(data_dir, subfolder)) if 'baseline_lower' in x][0]))
 
     if story_id == 'pieman':
-        video_events = video_events[0:24]
+        story_events = story_events[0:24]
     """
     scoring the correlation matrix (testing different methods)
     """
@@ -85,7 +90,7 @@ for story_id in story_ids:
     method = 'recall'
 
     for recall_event in recall_events:
-        corrmat = 1 - cdist(video_events, recall_event, 'correlation')  # this is the correlation matrix
+        corrmat = 1 - cdist(story_events, recall_event, 'correlation')  # this is the correlation matrix
         # plotting the story-recall matrix
         # computing scores
         precise_mat = precise_matches_mat(corrmat,method)
@@ -131,13 +136,3 @@ for story_id in story_ids:
     plot_n += 1
 fig.tight_layout()
 fig.savefig(os.path.join(FIG_DIR,'probRecall.svg'))
-
-
-
-
-
-
-
-
-
-
