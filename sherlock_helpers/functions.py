@@ -1,8 +1,3 @@
-"""
-This module contains analysis functions used across multiple notebooks,
-as well as some functions to view them from the notebooks
-"""
-
 import re
 from inspect import getsource
 from typing import Iterator
@@ -44,15 +39,15 @@ def get_video_timepoints(window_spans, annotations):
     return np.array(timepoints)
 
 
-def parse_windows(textlist, wsize, stepsize):
+def parse_windows(textlist, wsize, stepsize):  # modified
     windows = []
     window_bounds = []
-    for ix in np.arange(1, wsize, stepsize):
+    for ix in np.arange(1, wsize, stepsize):  # modified
         start, end = 0, ix
         window_bounds.append((start, end))
         windows.append(' '.join(textlist[start:end]))
-    if wsize==1 and stepsize==1:
-        window_bounds.append((0,1))
+    if wsize==1 and stepsize==1:  # modified
+        window_bounds.append((0,1))  # modified
         windows.append(' '.join(textlist[0:1]))
     for ix in np.arange(1, len(textlist), stepsize):
         start = ix
@@ -61,7 +56,8 @@ def parse_windows(textlist, wsize, stepsize):
         windows.append(' '.join(textlist[start:end]))
 
     return windows, window_bounds
-# phoebe edits: regular sliding windows
+
+### modifications: regular sliding windows
 def parse_windows_reg(textlist, wsize, stepsize):
     windows = []
     window_bounds = []
@@ -72,6 +68,7 @@ def parse_windows_reg(textlist, wsize, stepsize):
         windows.append(' '.join(textlist[start:end]))
 
     return windows, window_bounds
+### end modifications
 
 ########################################
 #             TEXT RECOVERY            #

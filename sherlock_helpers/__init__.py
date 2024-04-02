@@ -1,3 +1,4 @@
+
 from pathlib import Path
 
 from IPython.display import display, Markdown
@@ -16,9 +17,5 @@ message = Markdown(
     "</pre>"
 )
 
-# try:
-#     # check whether package was imported from a notebook
-#     get_ipython()
-#     display(message)
-# except NameError:
-#     pass
+# Modified: removed code to check for use in ipython notebook
+
