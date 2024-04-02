@@ -1,13 +1,28 @@
+"""
+This script will load a topic model trained on a story and apply a Hidden Markov Model to the topic vectors to segment
+it into events. To do this, it searches over a range of event numbers $k$ and chooses the value of $k$ that maximizes
+the Wasserstein distance of topic weights within an event versus across events. It will then generate some plots to show
+the output. Finally, the best k value is used to perform the event segmentation on the story.
+
+The same procedure is then repeated to segment the story recalls.
+Finally, each recall event is matched to one of the original story events. This is done slightly different than in
+Heusser et al. 2021.
+# TODO: add the detail about why the event matching is different
+This is repeated for each participant. Then, the average recall per original story event is computed across participants.
+Several output files are saved at each stage, and can be viewed in the output folder result_models.
+"""
+
+import numpy as np
 import os, sys
+import matplotlib.pyplot as plt
+import pickle
 import tqdm
 from scipy.spatial.distance import cdist
 from scipy.stats import wasserstein_distance, pearsonr
-from tqdm.notebook import tqdm
 sys.path.append(os.getcwd())
-from sherlock_helpers.functions import *
-from eventSeg_helpers import event
-from sherlock_helpers.scoring import *
-import matplotlib.pyplot as plt
+from sherlock_helpers.functions import create_diag_mask
+from sherlock_helpers.scoring import precise_matches_mat
+from eventSeg_helpers import event  # TODO: figure out where this import comes from!
 
 def reduce_model(m, ev):
     """Reduce a model based on event labels"""
@@ -20,22 +35,22 @@ def HMM_func(story_id):
     video_size = 55
     step_size = 21
     subfolder = f'{story_id}_t{n_topics}_v{video_size}_r{video_size}_s{step_size}'
-    DATA_DIR = 'result_models'
-    IMG_DIR = 'result_plots'
+    data_dir = 'result_models'
+    img_dir = 'result_plots'
     #######################
 
-    video_model, recall_models, recall_ids = np.load(os.path.join(os.getcwd(),DATA_DIR,subfolder+'.npy'),
+    video_model, recall_models, recall_ids = np.load(os.path.join(os.getcwd(),data_dir,subfolder+'.npy'),
                                          allow_pickle=True)
     # create folder to save data
-    isExist = os.path.exists(os.path.join(DATA_DIR,subfolder))
+    isExist = os.path.exists(os.path.join(data_dir,subfolder))
     if not isExist:
         # Create a new directory because it does not exist
-        os.makedirs(os.path.join(DATA_DIR,subfolder))
+        os.makedirs(os.path.join(data_dir,subfolder))
         print("The new directory is created!")
-    isExist = os.path.exists(os.path.join(IMG_DIR,subfolder))
+    isExist = os.path.exists(os.path.join(img_dir,subfolder))
     if not isExist:
         # Create a new directory because it does not exist
-        os.makedirs(os.path.join(IMG_DIR,subfolder))
+        os.makedirs(os.path.join(img_dir,subfolder))
         print("The new directory is created!")
 
     """
@@ -75,13 +90,13 @@ def HMM_func(story_id):
     plt.ylabel('Wasserstein distance')
     plt.xlabel('Number of events ($K$)')
     plt.title(f'Video: optimal $K$ = {maxk_video}')
-    plt.savefig(os.path.join(IMG_DIR,subfolder,'storyk.png'))
+    plt.savefig(os.path.join(img_dir,subfolder,'storyk.png'))
     # plt.show()
 
     plt.figure()
     plt.imshow(corrmat,cmap=plt.get_cmap("Greys"))
     plt.title('self-corr')
-    plt.savefig(os.path.join(IMG_DIR,subfolder,'storycorr.png'))
+    plt.savefig(os.path.join(img_dir,subfolder,'storycorr.png'))
 
     """
     fitting the model to the story (using maxk_video, i.e. the optimal # of events)
@@ -96,9 +111,10 @@ def HMM_func(story_id):
         video_event_times.append((tp[0], tp[-1]))
 
     # save story stuff
-    np.save(os.path.join(DATA_DIR,subfolder,'video_events'), video_events)
-    np.save(os.path.join(DATA_DIR,subfolder,'video_event_times'), video_event_times)
-    with open(os.path.join(DATA_DIR,subfolder,'video_eventseg_models'),'wb') as f:
+    # TODO: refactor this to replace 'video' with 'story' in the filenames. Will also need to rename files in the repo...
+    np.save(os.path.join(data_dir,subfolder,'video_events'), video_events)
+    np.save(os.path.join(data_dir,subfolder,'video_event_times'), video_event_times)
+    with open(os.path.join(data_dir,subfolder,'video_eventseg_models'),'wb') as f:
         pickle.dump(ev, f)
     """
     finding the optimal k for recall
@@ -143,7 +159,7 @@ def HMM_func(story_id):
         axes[0].set_ylabel('Wasserstein distance')
         axes[0].set_title(f'$K$ = {maxk_recall}, '+os.path.basename(recall_ids[n])[0:5])
         axes[1].imshow(corrmat,cmap=plt.get_cmap("Greys"))
-        fig.savefig(os.path.join(IMG_DIR, subfolder, os.path.basename(recall_ids[n])[0:5]+'_recallk.png'))
+        fig.savefig(os.path.join(img_dir, subfolder, os.path.basename(recall_ids[n])[0:5]+'_recallk.png'))
         """
         write down the k just in case
         """
@@ -202,11 +218,11 @@ def HMM_func(story_id):
     avg_recall_events = np.array(list(map(lambda r: np.nanmean(r, 0) if len(r) > 0 else np.zeros((n_topics,)), avg_recalls)))
 
     # save
-    np.save(os.path.join(DATA_DIR,subfolder,'avg_recall_events'), avg_recall_events)
-    np.save(os.path.join(DATA_DIR,subfolder,'labels'), np.array(matches, dtype=object), allow_pickle=True)
-    np.save(os.path.join(DATA_DIR,subfolder,'recall_events'),  np.array(recall_events, dtype=object), allow_pickle=True)
-    np.save(os.path.join(DATA_DIR,subfolder,'recall_event_times'), np.array(recall_event_times, dtype=object), allow_pickle=True)
-    with open(os.path.join(DATA_DIR,subfolder,'recall_eventseg_models'),'wb') as f:
+    np.save(os.path.join(data_dir,subfolder,'avg_recall_events'), avg_recall_events)
+    np.save(os.path.join(data_dir,subfolder,'labels'), np.array(matches, dtype=object), allow_pickle=True)
+    np.save(os.path.join(data_dir,subfolder,'recall_events'),  np.array(recall_events, dtype=object), allow_pickle=True)
+    np.save(os.path.join(data_dir,subfolder,'recall_event_times'), np.array(recall_event_times, dtype=object), allow_pickle=True)
+    with open(os.path.join(data_dir,subfolder,'recall_eventseg_models'),'wb') as f:
         pickle.dump(recall_eventseg_models, f)
 
 story_ids = ['pieman','eyespy','oregon','baseball']
