@@ -2,6 +2,7 @@ from pathlib import Path
 import numpy as np
 
 # paths for loading data and saving figures
+# TODO: remove these 3 lines since unused?
 RAW_DIR = Path('/mnt/data/raw')
 DATA_DIR = RAW_DIR.parent.joinpath('processed')
 FIG_DIR = Path('/mnt/paper/figs')
@@ -30,6 +31,7 @@ SEMANTIC_PARAMS = {
     }
 }
 
+# TODO: remove this?
 # hand-annotated memory performance for each participant (from Chen et al., 2017)
 HAND_REC = np.array([27, 24, 32, 33, 32, 39, 30, 39,
                      28, 40, 34, 38, 47, 38, 27, 37, 39])
