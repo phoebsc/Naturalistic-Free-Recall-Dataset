@@ -1,7 +1,3 @@
-"""
-Taken from Mariya's jupyter notebook
-"""
-import pickle
 import numpy as np
 # for each row, record the largest number
 def precise_matches_mat(corr_mat, axis):
