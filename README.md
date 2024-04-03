@@ -1,8 +1,8 @@
-# Narrative Memory Dataset
+# Narrative Free Recall Dataset
 
-This repository contains code used to produce the paper "The Narrative Memory Dataset: four stories, hundreds of participants, and high-fidelity transcriptions" by Omri Raccah, Phoebe Chen, David Poeppel, and Vy A. Vo.
+This repository contains code used to produce the paper "The Narrative Free Recall Dataset: four stories, hundreds of participants, and high-fidelity transcriptions" by Omri Raccah, Phoebe Chen, David Poeppel, and Vy A. Vo.
 The data in the project is at https://osf.io/h2pkv/. To reproduce the results, place the recall transcripts in respective folders such as /recall_transcript/recall_transcript_eyespy.
-The code follows the processing steps in the paper ["Geometric models reveal behavioural and neural signatures of transforming naturalistic experiences into episodic memories"](https://www.nature.com/articles/s41562-021-01051-6.epdf?sharing_token=zBNF7ExvsNAn6dwRV2wbatRgN0jAjWel9jnR3ZoTv0Os85t-vR-u-Efaty0-uoqOJVLSCaVoppMqs8h0fibLcqGN8-6I_NPhCJMoHMR5VvrNcBfBoco7C6Yp3vJJfeQhUOvYBnwv3BSjY0N1-ytdd_S-DhUyYmokmB3dfE-NX_Q%3D), with certain modifications outlined in our paper.
+The code borrows heavily from the processing steps in the paper ["Geometric models reveal behavioural and neural signatures of transforming naturalistic experiences into episodic memories"](https://www.nature.com/articles/s41562-021-01051-6.epdf?sharing_token=zBNF7ExvsNAn6dwRV2wbatRgN0jAjWel9jnR3ZoTv0Os85t-vR-u-Efaty0-uoqOJVLSCaVoppMqs8h0fibLcqGN8-6I_NPhCJMoHMR5VvrNcBfBoco7C6Yp3vJJfeQhUOvYBnwv3BSjY0N1-ytdd_S-DhUyYmokmB3dfE-NX_Q%3D), with certain modifications outlined in our paper.
 
 The repository is organized as follows:
 
