@@ -9,7 +9,6 @@ from fastdtw import fastdtw
 from IPython.display import display, HTML
 from IPython.core.oinspect import pylight
 from scipy.spatial.distance import correlation
-from scipy.stats import norm
 
 from .constants import EDGECOLOR, GRID_SCALE, RAW_DIR, RECALL_WSIZE
 
@@ -264,6 +263,7 @@ def kth_diag_indices(arr, k):
         return row_ix[:-k], col_ix[k:]
 
 
+# TODO: remove since it adds another requirement?
 def warp_recall(recall_traj, video_traj, return_paths=False):
     dist, path = fastdtw(video_traj, recall_traj, dist=correlation)
     recall_path = [i[1] for i in path]
@@ -275,6 +275,7 @@ def warp_recall(recall_traj, video_traj, return_paths=False):
         return warped_recall
 
 
+# TODO: remove the functions in NOTEBOOK DISPLAYS since they are unused / add requirements?
 ########################################
 #          NOTEBOOK DISPLAYS           #
 ########################################
