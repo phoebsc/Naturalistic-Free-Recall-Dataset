@@ -32,14 +32,14 @@ def reduce_model(m, ev):
 def HMM_func(story_id):
     #######################
     n_topics = 40
-    video_size = 55
+    story_size = 55
     step_size = 21
-    subfolder = f'{story_id}_t{n_topics}_v{video_size}_r{video_size}_s{step_size}'
+    subfolder = f'{story_id}_t{n_topics}_v{story_size}_r{story_size}_s{step_size}'
     data_dir = 'result_models'
     img_dir = 'result_plots'
     #######################
 
-    video_model, recall_models, recall_ids = np.load(os.path.join(os.getcwd(),data_dir,subfolder+'.npy'),
+    story_model, recall_models, recall_ids = np.load(os.path.join(os.getcwd(),data_dir,subfolder+'.npy'),
                                          allow_pickle=True)
     # create folder to save data
     isExist = os.path.exists(os.path.join(data_dir,subfolder))
@@ -56,13 +56,13 @@ def HMM_func(story_id):
     """
     finding the optimal k for story
     """
-    n_events = np.arange(2,min(50,len(video_model)-1))
+    n_events = np.arange(2,min(50,len(story_model)-1))
     wd = np.zeros(len(n_events))
-    corrmat = np.corrcoef(video_model)
+    corrmat = np.corrcoef(story_model)
 
     for i, events in enumerate(tqdm(n_events, leave=False)):
         ev = event.EventSegment(events)
-        ev.fit(video_model)
+        ev.fit(story_model)
 
         i1, i2 = np.where(np.round(ev.segments_[0]) == 1)
         w = np.zeros_like(ev.segments_[0])
@@ -86,10 +86,10 @@ def HMM_func(story_id):
     """
     plt.figure()
     plt.plot(n_events, wd)
-    maxk_video = n_events[np.argmax(wd)]
+    maxk_story = n_events[np.argmax(wd)]
     plt.ylabel('Wasserstein distance')
     plt.xlabel('Number of events ($K$)')
-    plt.title(f'Video: optimal $K$ = {maxk_video}')
+    plt.title(f'story: optimal $K$ = {maxk_story}')
     plt.savefig(os.path.join(img_dir,subfolder,'storyk.png'))
     # plt.show()
 
@@ -99,22 +99,21 @@ def HMM_func(story_id):
     plt.savefig(os.path.join(img_dir,subfolder,'storycorr.png'))
 
     """
-    fitting the model to the story (using maxk_video, i.e. the optimal # of events)
+    fitting the model to the story (using maxk_story, i.e. the optimal # of events)
     """
-    ev = event.EventSegment(maxk_video)
-    ev.fit(video_model)
-    video_events = reduce_model(video_model, ev)
+    ev = event.EventSegment(maxk_story)
+    ev.fit(story_model)
+    story_events = reduce_model(story_model, ev)
 
-    video_event_times = []
+    story_event_times = []
     for s in ev.segments_[0].T:
         tp = np.where(np.round(s) == 1)[0]
-        video_event_times.append((tp[0], tp[-1]))
+        story_event_times.append((tp[0], tp[-1]))
 
     # save story stuff
-    # TODO: refactor this to replace 'video' with 'story' in the filenames. Will also need to rename files in the repo...
-    np.save(os.path.join(data_dir,subfolder,'video_events'), video_events)
-    np.save(os.path.join(data_dir,subfolder,'video_event_times'), video_event_times)
-    with open(os.path.join(data_dir,subfolder,'video_eventseg_models'),'wb') as f:
+    np.save(os.path.join(data_dir,subfolder,'story_events'), story_events)
+    np.save(os.path.join(data_dir,subfolder,'story_event_times'), story_event_times)
+    with open(os.path.join(data_dir,subfolder,'story_eventseg_models'),'wb') as f:
         pickle.dump(ev, f)
     """
     finding the optimal k for recall
@@ -196,7 +195,7 @@ def HMM_func(story_id):
     method = 'recall'
     matches = []
     for i,r in enumerate(recall_events):
-        corrmat = 1 - cdist(video_events, r, 'correlation')
+        corrmat = 1 - cdist(story_events, r, 'correlation')
         precise_mat = precise_matches_mat(corrmat, method)
         match = []
         for column in precise_mat.T:
@@ -207,7 +206,7 @@ def HMM_func(story_id):
         matches.append(match)
 
     matches = [list(m) for m in matches]
-    avg_recalls = [[] for _ in video_events]
+    avg_recalls = [[] for _ in story_events]
     for match, r in zip(matches, recall_events):
         for i, m in enumerate(match):
             try:

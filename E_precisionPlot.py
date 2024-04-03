@@ -62,7 +62,7 @@ for story_id in story_ids:
     data_dir = 'result_models'
     img_dir = 'result_plots'
     subfolder = '%s_t40_v55_r55_s21' % story_id
-    story_events = np.load(os.path.join(data_dir,subfolder,'video_events.npy'), allow_pickle=True)  # TODO: refactor instances of 'video*.file_ext'
+    story_events = np.load(os.path.join(data_dir,subfolder,'story_events.npy'), allow_pickle=True)
     recall_events = np.load(os.path.join(data_dir,subfolder,'recall_events.npy'), allow_pickle=True)
     event_mappings = np.load(os.path.join(data_dir,subfolder,'labels.npy'), allow_pickle=True)
     _, _, recall_ids = np.load(os.path.join(data_dir,subfolder+'.npy'),

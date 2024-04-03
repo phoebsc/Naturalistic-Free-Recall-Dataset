@@ -24,7 +24,7 @@ for id in story_ids:
     subfolder = '%s_t40_v55_r55_s21' % id
     # filename = [x for x in os.listdir(os.path.join(data_dir, subfolder)) if 'precision_array' in x][0]
     recall = np.load(os.path.join(data_dir, subfolder, 'recall_events.npy'), allow_pickle=True)
-    story_events = np.load(os.path.join(data_dir, subfolder, 'video_events.npy'), allow_pickle=True)  # TODO: refactor instances of 'video*.file_ext'
+    story_events = np.load(os.path.join(data_dir, subfolder, 'story_events.npy'), allow_pickle=True)
     if id == 'pieman':
         story_events = story_events[0:24]
     save = np.zeros((len(recall),story_events.shape[0]))
@@ -75,7 +75,7 @@ for id in ['eyespy','pieman','baseball','oregon']:
     subfolder = '%s_t40_v55_r55_s21' % id
     # filename = [x for x in os.listdir(os.path.join(data_dir,subfolder)) if 'precision_array' in x][0]
     recall = np.load(os.path.join(data_dir,subfolder,'recall_events.npy'), allow_pickle=True)
-    story_events = np.load(os.path.join(data_dir, subfolder, 'video_events.npy'), allow_pickle=True)  # TODO: refactor instances of 'video*.file_ext'
+    story_events = np.load(os.path.join(data_dir, subfolder, 'story_events.npy'), allow_pickle=True)
     if id == 'pieman':
         story_events = story_events[0:24]
     save = np.zeros((len(recall),2*story_events.shape[0]-1))  # n_participant x (2*event-1)  for saving the result

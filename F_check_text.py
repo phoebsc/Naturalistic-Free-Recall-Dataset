@@ -41,9 +41,9 @@ step_size = 21
 subfolder = f'{story_id}_t{n_topics}_v{story_size}_r{story_size}_s{step_size}'
 #########################3#### if os.path.isfile(os.path.join(txt_dir,subfolder,'story.txt')):
 #     return None
-story_events_times = np.load(os.path.join(data_dir,subfolder,'video_event_times.npy'), allow_pickle=True)  # TODO: refactor instances of 'video*.file_ext'
+story_events_times = np.load(os.path.join(data_dir,subfolder,'story_event_times.npy'), allow_pickle=True)
 recall_events_times = np.load(os.path.join(data_dir,subfolder,'recall_event_times.npy'), allow_pickle=True)
-story_events = np.load(os.path.join(data_dir,subfolder,'video_events.npy'), allow_pickle=True)  # TODO: refactor instances of 'video*.file_ext'
+story_events = np.load(os.path.join(data_dir,subfolder,'story_events.npy'), allow_pickle=True)
 recall_events = np.load(os.path.join(data_dir,subfolder,'recall_events.npy'), allow_pickle=True)
 # event_mappings = np.load(os.path.join(data_dir,subfolder,'labels.npy'), allow_pickle=True)
 story_model, recall_models, recall_ids = np.load(os.path.join(os.getcwd(),data_dir,subfolder+'.npy'),
