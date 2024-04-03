@@ -1,3 +1,7 @@
+"""
+TODO: is this file necessary? I don't think these figures are in the paper...
+"""
+
 import os
 import numpy as np
 import sys
@@ -7,11 +11,6 @@ try:
 except:
     pass
 sys.path.append(os.getcwd())
-from sherlock_helpers.scoring import *
-from scipy.spatial.distance import cdist
-from numpy.random import permutation
-import matplotlib
-import matplotlib.pyplot as plt
 DATA_DIR = './result_models'
 IMG_DIR = './result_plots'
 """
