@@ -1,5 +1,4 @@
 """
-# TODO: rename this file to indicate that it's plotting P(recall) too?
 Generates plots to examine (1) probability of recall and (2) precision of recall. Also computes a permutation
 baseline by scrambling tevents within each participant.
 """

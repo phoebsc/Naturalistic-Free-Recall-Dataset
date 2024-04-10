@@ -6,8 +6,9 @@ the output. Finally, the best k value is used to perform the event segmentation 
 
 The same procedure is then repeated to segment the story recalls.
 Finally, each recall event is matched to one of the original story events. This is done slightly different than in
-Heusser et al. 2021.
-# TODO: add the detail about why the event matching is different
+Heusser et al. 2021. Instead of finding the highest correlation value for each story event, we 
+matched each recall event to one story event with the highest correlation. This is because we assume not every story event
+was recalled, but every recall event belonged to the story.
 This is repeated for each participant. Then, the average recall per original story event is computed across participants.
 Several output files are saved at each stage, and can be viewed in the output folder result_models.
 """
@@ -22,7 +23,7 @@ from scipy.stats import wasserstein_distance, pearsonr
 sys.path.append(os.getcwd())
 from sherlock_helpers.functions import create_diag_mask
 from sherlock_helpers.scoring import precise_matches_mat
-from eventSeg_helpers import event  # TODO: figure out where this import comes from!
+from eventSeg_helpers import event
 
 def reduce_model(m, ev):
     """Reduce a model based on event labels"""

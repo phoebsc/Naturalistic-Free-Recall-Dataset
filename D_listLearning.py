@@ -65,8 +65,8 @@ lag recency (each story)
 method: For each recall transition (following the first recall), we computed 
 the lag between the current recall event and the next recall event, normalizing 
 by the total number of possible transitions. 
-This yielded a number-of-participants (17) by number-of-lags (−29 to +29; 58 lags in total excluding lags of 0) matrix.
-"""  # TODO: fix the line above -- the numbers seem wrong.
+This yielded a number-of-participants by number-of-lags matrix.
+""" 
 method = 'recall'
 ax = axes.flat[1]
 colors = ['#66c2a5','#fc8d62','#8da0cb','#e78ac3']
