@@ -30,26 +30,26 @@ story_ids = ['pieman','eyespy','oregon','baseball']
 for id in story_ids:
     subfolder = '%s_t40_v55_r55_s21' % id
     filename = [x for x in os.listdir(os.path.join(data_dir, subfolder)) if 'precision_array' in x][0]
-    precisions = np.load(os.path.join(data_dir, subfolder, filename), allow_pickle=True)
-    precisions[precisions>0] = 1  # turn precision matrix into probability of recall
-    baseline_upper, baseline_lower = generate_baseline(precisions)
+    p_recalls = np.load(os.path.join(data_dir, subfolder, filename), allow_pickle=True)
+    p_recalls[p_recalls>0] = 1  # turn matrix into probability of recall
+    baseline_upper, baseline_lower = generate_baseline(p_recalls)
     # save baseline
     np.save(os.path.join(data_dir,subfolder,'probrecall_baseline_upper'),  np.array(baseline_upper))
     np.save(os.path.join(data_dir,subfolder,'probrecall_baseline_lower'),  np.array(baseline_lower))
 
     # plot
     fig, ax = plt.subplots(figsize=(20, 20))
-    y = np.mean(precisions, axis=0)
-    ci = 1.96 * np.std(precisions, axis=0) / np.sqrt(len(precisions))
-    ax.plot(np.arange(1,precisions.shape[1]+1), y)
-    ax.plot(np.arange(1,precisions.shape[1]+1), baseline_upper, color='r')
-    ax.plot(np.arange(1,precisions.shape[1]+1), baseline_lower, color='r')
-    ax.fill_between(np.arange(1, precisions.shape[1]+1), (y - ci), (y + ci),
+    y = np.mean(p_recalls, axis=0)
+    ci = 1.96 * np.std(p_recalls, axis=0) / np.sqrt(len(p_recalls))
+    ax.plot(np.arange(1,p_recalls.shape[1]+1), y)
+    ax.plot(np.arange(1,p_recalls.shape[1]+1), baseline_upper, color='r')
+    ax.plot(np.arange(1,p_recalls.shape[1]+1), baseline_lower, color='r')
+    ax.fill_between(np.arange(1, p_recalls.shape[1]+1), (y - ci), (y + ci),
                     color='b',
                     alpha=.1)
     fig.savefig(os.path.join(img_dir, subfolder, 'probrecall_baseline.png'))
 """
-plotting precision plot
+plotting p_recall plot
 """
 plt.rcParams.update({'font.size': 13})
 story_ids = ['pieman','eyespy','oregon','baseball']
@@ -84,7 +84,7 @@ for story_id in story_ids:
     """
 
     ##
-    precisions = []
+    p_recalls = []
     distincts = []
     method = 'recall'
 
@@ -96,18 +96,18 @@ for story_id in story_ids:
         precise = np.max(precise_mat,axis=1)
         distinct_mat = distinct_matches_mat(corrmat,method)
         distinct = np.max(distinct_mat, axis=1)
-        precisions.append(precise)
+        p_recalls.append(precise)
         distincts.append(distinct)
-    # average plot for precisions
+    # average plot for p_recalls
     # some confidence interval
-    precisions = np.array(precisions)
-    precisions[precisions>0] = 1  # turn precision matrix into probability of recall
-    y = np.mean(precisions,axis=0)
+    p_recalls = np.array(p_recalls)
+    p_recalls[p_recalls>0] = 1  # turn matrix into probability of recall
+    y = np.mean(p_recalls,axis=0)
     # bootstrapping Confidence Interval
     ci = []
-    for sub in range(len(precisions[0])):
+    for sub in range(len(p_recalls[0])):
         rng = np.random.default_rng()
-        res = bootstrap((precisions[:,sub],), np.mean, confidence_level=0.95,
+        res = bootstrap((p_recalls[:,sub],), np.mean, confidence_level=0.95,
                         random_state=rng, method='percentile')
         ci.append(y[sub]-res.confidence_interval.low)
     axes.flat[plot_n].plot(np.arange(1,len(precise)+1),y,color=colors[plot_n])
