@@ -12,7 +12,7 @@ The repository is organized as follows:
 - B_HMM.py : Python script for event detection using Hidden Markov Models (output saved in "result_models")
 - C_scoring.py : Python script for scoring the recalls (output saved in "result_models")
 - D_listLearning.py : Python script for list learning analysis (figure 3)
-- E_precisionPlot.py : Python script for generating precision plots (figure 2)
+- E_ProbRecallPlot.py : Python script for generating precision plots (figure 2)
 - F_check_text.py : Python script for text checking (output saved in "result_text")
   
 ### folders
