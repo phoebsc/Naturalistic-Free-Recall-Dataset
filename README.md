@@ -19,3 +19,4 @@ The repository is organized as follows:
 - result_models : Folder containing model results
 - result_text : Folder containing text results
 - story_transcript : Original transcripts of stories used in analyses
+- eventSeg_helpers : contains the exact code copied from brainiak.eventseg.event from the Python software [Brainiak](https://brainiak.org/)
