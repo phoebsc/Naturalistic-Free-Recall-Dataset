@@ -14,6 +14,7 @@ The repository is organized as follows:
 - D_listLearning.py : Python script for list learning analysis (figure 3)
 - E_ProbRecallPlot.py : Python script for generating precision plots (figure 2)
 - F_check_text.py : Python script for text checking (output saved in "result_text")
+- G_semantic_centrality.py and G_semantic_centrality_LMM.Rmd: python and R script for generating the semantic network plot and semantic centrality LMM analysis
   
 ### folders
 - sherlock_helpers : Python package with support code for 'Sherlock' analyses
