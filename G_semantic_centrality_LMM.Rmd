@@ -1,0 +1,41 @@
+---
+title: "centrality"
+output: html_document
+---
+```{r}
+library("readxl")
+library("dplyr")
+library("emmeans")
+library("car")
+library("ggplot2")
+library("simr")
+options(warn=-1)
+pacman::p_load(svglite,ggbeeswarm,gridExtra,dplyr, ggpubr, car, ggeffects, ggplot2, knitr, lme4, readxl, tibble, afex, nonnest2, lmtest, cowplot)
+# function to reformat the lmer outcomes
+coef.format <- function(object) {
+  sc <- fixef(object)
+  se <- coef(summary(object))[,"Std. Error"]
+  result = data.frame(coef=sc, se=se)
+  result$lower = result$coef-result$se*1.96
+  result$upper = result$coef+result$se*1.96
+  result$upper<-format(round(result$upper,2),nsmall=2)
+  result$lower<-format(round(result$lower,2),nsmall=2)
+  result$coef<-format(round(result$coef,2),nsmall=2)
+  return(result)
+}
+```
+
+```{r}
+data = read_excel('C:/users/hchen/Dropbox/PycharmProjects/topic_models/LMM_all.xlsx',.name_repair = "universal" )
+data$event_id = factor(data$event_id)
+data$story_id = factor(data$story_id)
+data$participant_id = factor(data$participant_id)
+data$centrality = scale(data$centrality)
+```
+# centrality
+```{r}
+model = glmer(recalled ~ centrality+(1|story_id)+(1|participant_id), data = data,family = binomial(link = "logit"),control=glmerControl(optimizer="bobyqa"))
+summary(model)
+anova(model)
+coef.format(model)
+```
