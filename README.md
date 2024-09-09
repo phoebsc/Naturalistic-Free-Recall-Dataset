@@ -22,6 +22,7 @@ The repository is organized as follows:
 - result_text : Folder containing text results
 - story_transcript : Original transcripts of stories used in analyses
 - eventSeg_helpers : contains the exact code copied from brainiak.eventseg.event from the Python software [Brainiak](https://brainiak.org/)
+- segmentation: code for extracting event boundaries from the annotation data of Pieman. The attached data (agreement_run2.mat and alldata_run2.mat) is copied from the [publicly available dataset](https://doi.org/10.5281/zenodo.5071942) associated with [Michelmann et al. 2021](https://www.nature.com/articles/s41562-021-01051-6.epdf?sharing_token=zBNF7ExvsNAn6dwRV2wbatRgN0jAjWel9jnR3ZoTv0Os85t-vR-u-Efaty0-uoqOJVLSCaVoppMqs8h0fibLcqGN8-6I_NPhCJMoHMR5VvrNcBfBoco7C6Yp3vJJfeQhUOvYBnwv3BSjY0N1-ytdd_S-DhUyYmokmB3dfE-NX_Q%3D).
 
 ## Python Version
 This project requires Python `3.9.0`. You can check your Python version by running:
